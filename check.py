@@ -10,7 +10,7 @@ headers = {
 
 html = requests.get(URL, headers=headers).text
 
-if "SOLD OUT" not in html:
+if True:
     requests.post(
         WEBHOOK,
         json={
