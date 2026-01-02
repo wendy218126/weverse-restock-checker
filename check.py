@@ -1,32 +1,52 @@
 import requests
 import os
+from datetime import datetime
 
-URL = "https://shop.weverse.io/en/shop/USD/artists/3/sales/52282"
+# =========================
+# ① 要監控的商品網址（只改這裡）
+# =========================
+URL = "https://shop.weverse.io/en/shop/USD/artists/3/sales/43782"
+# 測試時你可以暫時改成：
+# URL = "https://shop.weverse.io/en/shop/USD/artists/3/sales/52282"
+
 WEBHOOK = os.environ["DISCORD_WEBHOOK"]
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
 }
 
-html = requests.get(URL, headers=headers, timeout=15).text.lower()
+print("SCRIPT STARTED")
+print("Checking URL:", URL)
+print("Checked at UTC:", datetime.utcnow())
 
-# 常見售罄關鍵字（保守寫法）
-sold_out_keywords = [
-    "sold out",
-    "out of stock",
-    "품절"
+response = requests.get(URL, headers=headers, timeout=20)
+html = response.text.lower()
+
+# =========================
+# ② 「手機穩定版」購買訊號判斷
+# （寧願多叫，也不要漏）
+# =========================
+buy_signals = [
+    "add to cart",
+    "buy now",
+    "purchase",
+    "checkout",
+    "cart",
+    "order",
 ]
 
-is_sold_out = any(keyword in html for keyword in sold_out_keywords)
+has_buy_signal = any(signal in html for signal in buy_signals)
 
-if not is_sold_out:
+if has_buy_signal:
+    print("BUY SIGNAL DETECTED")
     requests.post(
         WEBHOOK,
         json={
-            "content": f"🚨 **Weverse 補貨偵測到有庫存！**\n{URL}"
+            "content": f"🚨 **Weverse 可能補貨了！快查看**\n{URL}"
         },
         timeout=10
     )
-    print("RESTOCK DETECTED → Discord notified")
 else:
-    print("Still sold out")
+    print("No buy signal yet (probably sold out)")
+
+print("SCRIPT FINISHED")
