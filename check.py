@@ -1,7 +1,7 @@
 import requests
 import os
 
-URL = "https://shop.weverse.io/en/shop/USD/artists/3/sales/43782"
+URL = "https://shop.weverse.io/en/shop/USD/artists/3/sales/52282"
 WEBHOOK = os.environ["DISCORD_WEBHOOK"]
 
 headers = {
