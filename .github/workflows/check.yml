@@ -2,7 +2,7 @@ name: Weverse Restock Check
 
 on:
   schedule:
-    - cron: "*/3 * * * *"   # 🔥 每 3 分鐘一次（可改 1、5）
+    - cron: "*/1 * * * *"   # 🔥 每 3 分鐘一次（可改 1、5）
   workflow_dispatch:
 
 jobs:
