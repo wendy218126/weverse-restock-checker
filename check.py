@@ -3,13 +3,12 @@ import os
 from datetime import datetime
 
 # ==================================================
-# ① 要監控的商品網址（只改這一行）
+# ① 要監控的商品網址
 # ==================================================
 URL = "https://shop.weverse.io/en/shop/USD/artists/3/sales/52282"
 # 測試用（目前有貨）：
 # URL = "https://shop.weverse.io/en/shop/USD/artists/3/sales/52282"
 
-# Discord Webhook（從 GitHub Secrets 讀）
 WEBHOOK = os.environ["DISCORD_WEBHOOK"]
 
 headers = {
@@ -24,32 +23,34 @@ try:
     response = requests.get(URL, headers=headers, timeout=20)
     html = response.text.lower()
 
-    # ==================================================
-    # ② 判斷邏輯（重點）
-    # 有 purchase「且」沒有 sold out 類訊號才通知
-    # ==================================================
+    # =========================
+    # 核心判斷（實戰版）
+    # =========================
     has_purchase = "purchase" in html
 
-    sold_out_signals = [
+    disabled_signals = [
+        "disabled",
+        "unavailable",
+        "not available",
         "sold out",
         "out of stock",
         "품절"
     ]
-    is_sold_out = any(word in html for word in sold_out_signals)
+    is_disabled = any(word in html for word in disabled_signals)
 
-    if has_purchase and not is_sold_out:
+    if has_purchase and not is_disabled:
         print("VALID PURCHASE STATE DETECTED → notify Discord")
         requests.post(
             WEBHOOK,
             json={
-                "content": f"🚨 **Weverse 真的可以購買了！**\n{URL}"
+                "content": f"🚨 **Weverse 可以購買了！**\n{URL}"
             },
             timeout=10
         )
     else:
         print(
-            "No valid purchase yet | "
-            f"purchase={has_purchase}, sold_out={is_sold_out}"
+            "Not purchasable yet | "
+            f"purchase={has_purchase}, disabled={is_disabled}"
         )
 
 except Exception as e:
