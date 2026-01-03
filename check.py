@@ -5,7 +5,7 @@ from datetime import datetime
 # ==================================================
 # ① 要監控的商品網址（只改這一行）
 # ==================================================
-URL = "https://shop.weverse.io/en/shop/USD/artists/3/sales/43782"
+URL = "https://shop.weverse.io/en/shop/USD/artists/3/sales/52282"
 # 測試用（目前有貨）：
 # URL = "https://shop.weverse.io/en/shop/USD/artists/3/sales/52282"
 
