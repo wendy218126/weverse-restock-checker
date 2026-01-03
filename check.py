@@ -2,14 +2,8 @@ import requests
 import os
 from datetime import datetime
 
-# ==================================================
-# ① 要監控的商品網址（只改這一行即可）
-# ==================================================
 URL = "https://shop.weverse.io/en/shop/USD/artists/3/sales/43782"
-# 測試用（目前有貨）：
-# URL = "https://shop.weverse.io/en/shop/USD/artists/3/sales/52282"
 
-# Discord Webhook（從 GitHub Secrets 讀）
 WEBHOOK = os.environ["DISCORD_WEBHOOK"]
 
 headers = {
@@ -24,11 +18,7 @@ try:
     response = requests.get(URL, headers=headers, timeout=20)
     html = response.text.lower()
 
-    # ==================================================
-    # ② 最穩定判斷條件：只看「purchase」
-    # ==================================================
     if "purchase" in html:
-        print("PURCHASE detected → sending Discord notification")
         requests.post(
             WEBHOOK,
             json={
@@ -36,8 +26,9 @@ try:
             },
             timeout=10
         )
+        print("PURCHASE detected")
     else:
-        print("No purchase button yet (still sold out)")
+        print("No purchase button yet")
 
 except Exception as e:
     print("Error occurred:", e)
